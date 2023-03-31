@@ -1,0 +1,11 @@
+.my-wallet {
+  position: relative;
+  height: 100%;
+  width: 60%;
+}
+
+@media only screen and (max-width: 650px) {
+  .my-wallet {
+    width: 100%;
+  }
+}
