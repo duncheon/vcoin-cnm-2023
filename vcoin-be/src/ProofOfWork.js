@@ -1,7 +1,9 @@
 const Block = require('./Block');
 const BlockChain = require('./BlockChain');
-const BLOCK_GENERATION_INTERVAL = 10;
-const DIFFICULTY_ADJUSTMENT_INTERVAL = 10;
+const {
+  BLOCK_GENERATION_INTERVAL,
+  DIFFICULTY_ADJUSTMENT_INTERVAL,
+} = require('./constVal');
 
 class ProoFOfWork {
   static getAdjustedDifficulty(latestBlock, blockChain) {
@@ -28,7 +30,7 @@ class ProoFOfWork {
       newBlock.index,
       newBlock.prevHash,
       newBlock.timestamp,
-      newBlock.data,
+      newBlock.transactions,
       newBlock.difficulty,
       newBlock.nonce
     );
@@ -48,17 +50,16 @@ class ProoFOfWork {
     return hash.startsWith(requiredPrefix);
   }
 
-  static findBlock = (index, prevHash, timestamp, data, difficulty) => {
+  static findBlock = (index, prevHash, timestamp, transactions, difficulty) => {
     let nonce = 0;
-    console.log(index, prevHash, timestamp, data, difficulty);
-    console.log(`Mining new block containing data:  ${data}`);
+    console.log(`Mining new block containing transactions:  ${transactions}`);
 
     while (true) {
       const blockHash = Block.calculateHash(
         index,
         prevHash,
         timestamp,
-        data,
+        transactions,
         difficulty,
         nonce
       );
@@ -69,7 +70,7 @@ class ProoFOfWork {
           index,
           prevHash,
           timestamp,
-          data,
+          transactions,
           blockHash,
           difficulty,
           nonce

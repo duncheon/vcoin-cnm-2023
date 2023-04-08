@@ -13,3 +13,15 @@ body,
   height: 100%;
   display: flex;
 }
+
+.content {
+  position: relative;
+  width: 60%;
+  height: 100%;
+}
+
+@media only screen and (max-width: 650px) {
+  .content {
+    width: 100%;
+  }
+}

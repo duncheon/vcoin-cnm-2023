@@ -7,7 +7,6 @@ const MyWallet = () => {
     <div className="my-wallet">
       <ProfileBar accountName={'myAccount'} publicAddress={'0x000000'} />
       <Content />
-      <AppBar />
     </div>
   );
 };

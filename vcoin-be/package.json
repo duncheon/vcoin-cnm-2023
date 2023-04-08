@@ -11,6 +11,11 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "crypto-js": "^4.1.1"
+    "crypto-js": "^4.1.1",
+    "dotenv": "^16.0.3",
+    "elliptic": "^6.5.4",
+    "fs": "^0.0.1-security",
+    "socket.io": "^4.6.1",
+    "socket.io-p2p-server": "^1.2.0"
   }
 }

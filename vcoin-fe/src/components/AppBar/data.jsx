@@ -6,14 +6,20 @@ import './appbar.css';
 
 const data = [
   {
-    text: <p className="icon-text">Assets</p>,
+    text: <p className="icon-text">Wallet</p>,
     icon: <RiMoneyDollarCircleLine size={28} />,
+    to: '/mywallet',
   },
   {
     text: <p className="icon-text">Activity</p>,
     icon: <SlNotebook size={28} />,
+    to: '/activity',
   },
-  { text: <p className="icon-text">NFTs</p>, icon: <BsGem size={28} /> },
+  {
+    text: <p className="icon-text">NFTs</p>,
+    icon: <BsGem size={28} />,
+    to: '/sendcoin',
+  },
   {
     text: <p className="icon-text">DApps</p>,
     icon: <AiOutlineAppstore size={28} />,

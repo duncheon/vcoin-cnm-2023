@@ -1,19 +1,40 @@
 const CryptoJS = require('crypto-js');
 
 class Block {
-  constructor(index, prevHash, timestamp, data, blockHash, difficulty, nonce) {
+  constructor(
+    index,
+    prevHash,
+    timestamp,
+    transactions,
+    blockHash,
+    difficulty,
+    nonce
+  ) {
     this.index = index;
     this.prevHash = prevHash;
     this.timestamp = timestamp;
-    this.data = data;
+    this.transactions = transactions;
     this.blockHash = blockHash;
     this.difficulty = difficulty;
     this.nonce = nonce;
   }
 
-  static calculateHash(index, prevHash, timestamp, data, difficulty, nonce) {
+  static calculateHash(
+    index,
+    prevHash,
+    timestamp,
+    transactions,
+    difficulty,
+    nonce
+  ) {
+    let transactionsHash = '';
+
+    transactions.forEach((transaction) => {
+      transactionsHash = transaction.id;
+    });
+
     return CryptoJS.SHA256(
-      index + prevHash + timestamp + data + difficulty + nonce
+      index + prevHash + timestamp + transactionsHash + difficulty + nonce
     ).toString();
   }
 
