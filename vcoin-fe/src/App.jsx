@@ -5,6 +5,7 @@ import SideBar from './components/SideBar/SideBar';
 import MyWallet from './pages/mywallet';
 import './app.css';
 import SendCoin from './pages/sendcoin';
+import Activity from './pages/activity';
 function App() {
   return (
     <div className="App">
@@ -13,7 +14,7 @@ function App() {
         <div className="content">
           <Routes>
             <Route path="/mywallet" element={<MyWallet />}></Route>
-            <Route path="/activity"></Route>
+            <Route path="/activity" element={<Activity />}></Route>
             <Route path="/sendCoin" element={<SendCoin />}></Route>
           </Routes>
           <AppBar />

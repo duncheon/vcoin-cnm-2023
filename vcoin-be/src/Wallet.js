@@ -2,13 +2,13 @@ require('dotenv');
 
 const ec = require('elliptic').ec;
 const EC = new ec('secp256k1');
-const privateKeyLocation = process.env.PRIVATE_KEY || '../data/wallet.json';
+const privateKeyLocation = './data/wallet.json';
 const fs = require('fs');
 
 class Wallet {
   constructor() {}
 
-  privateKeyExists(location) {
+  static privateKeyExists() {
     try {
       let walletData = JSON.parse(fs.readFileSync(privateKeyLocation));
       if (walletData.privateKey) {
@@ -20,7 +20,7 @@ class Wallet {
     return false;
   }
 
-  initWallet() {
+  static initWallet() {
     if (this.privateKeyExists(privateKeyLocation)) {
       return;
     }
@@ -33,16 +33,23 @@ class Wallet {
 
     try {
       fs.writeFileSync(privateKeyLocation, walletData);
-    } catch (err) {}
+    } catch (err) {
+      console.log('err');
+    }
   }
 
-  generatePrivateKey() {
+  static generatePrivateKey() {
     const keyPair = EC.genKeyPair();
     const privateKey = keyPair.getPrivate();
     return privateKey.toString(16);
   }
 
-  getPublicKey() {
+  static getPrivateKey() {
+    //  let walletData = JSON.parse(fs.readFileSync(privateKeyLocation));
+    return this.generatePrivateKey();
+  }
+
+  static getPublicKey() {
     const privateKey = this.getPrivateKey();
     const key = EC.keyFromPrivate(privateKey, 'hex');
     return key.getPublic().encode('hex');

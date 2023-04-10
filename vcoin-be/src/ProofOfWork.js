@@ -6,7 +6,10 @@ const {
 } = require('./constVal');
 
 class ProoFOfWork {
-  static getAdjustedDifficulty(latestBlock, blockChain) {
+  static getAdjustedDifficulty(blockchain) {
+    const latestBlock = blockchain.getLastestBlock();
+    const blockChain = blockchain.blocks;
+
     let prevAdjustmentBlock =
       blockChain[blockChain.length - DIFFICULTY_ADJUSTMENT_INTERVAL];
 
@@ -25,7 +28,7 @@ class ProoFOfWork {
     } else return prevAdjustmentBlock.difficulty;
   }
 
-  static verifyHash = (newBlock) => {
+  static verifyHash = (newBlock, blockchain) => {
     const reHash = Block.calculateHash(
       newBlock.index,
       newBlock.prevHash,
@@ -38,7 +41,7 @@ class ProoFOfWork {
     if (reHash === newBlock.blockHash) {
       return this.hashMatchesDifficulty(
         newBlock.blockHash,
-        newBlock.difficulty
+        this.getAdjustedDifficulty(blockchain)
       );
     }
 

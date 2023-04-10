@@ -1,0 +1,20 @@
+.activity-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.selection-tab {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+}
+
+.selection-btn {
+  width: 50%;
+  border: none;
+}
+
+.selected-tab {
+  border: 1px solid black;
+}
