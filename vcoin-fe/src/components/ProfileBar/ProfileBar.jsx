@@ -3,7 +3,9 @@ import './profilebar.css';
 
 const ProfileBar = ({ publicAddress, accountName }) => {
   const truncateText = (text) => {
-    return text.slice(0, 6) + '...' + text.slice(text.length - 4);
+    if (text) {
+      return text.slice(0, 6) + '...' + text.slice(text.length - 4);
+    }
   };
 
   return (

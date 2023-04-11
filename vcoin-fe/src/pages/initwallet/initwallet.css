@@ -1,0 +1,29 @@
+.init-container {
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.password-container {
+  border-radius: 15px;
+  height: 20em;
+  width: 20em;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background-color: grey;
+}
+
+.lock-img {
+  width: 4em;
+  height: 4em;
+  margin-bottom: 2em;
+}
+.password-container > input {
+  width: 80%;
+}
+.init-btn {
+  width: 5em;
+}

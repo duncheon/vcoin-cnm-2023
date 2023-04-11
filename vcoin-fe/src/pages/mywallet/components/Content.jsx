@@ -1,11 +1,26 @@
+import axios from 'axios';
 import './content.css';
+import { useState, useEffect } from 'react';
+const serverUrl = 'http://localhost:3001';
 
-const Content = () => {
-  const curCoin = 1412;
+const Content = ({ wallet }) => {
+  const { publicAddress } = wallet;
+  const [loading, setLoading] = useState(true);
+  const [balance, setBalance] = useState(0);
+
+  useEffect(() => {
+    if (publicAddress) {
+      axios.get(`${serverUrl}/balance/${publicAddress}`).then((data) => {
+        setLoading(false);
+        setBalance(data.data);
+      });
+    }
+  }, [publicAddress]);
+
   return (
     <>
       <div className="wallet-value">
-        <p className="wallet-value-text">{curCoin} VCOIN</p>
+        {!loading && <p className="wallet-value-text">{balance} VCOIN</p>}
       </div>
     </>
   );

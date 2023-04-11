@@ -1,3 +1,21 @@
+const express = require('express');
+const {
+  blockchain,
+  transactionPool,
+  getTransactionPool,
+  addTransactionToPool,
+} = require('./data');
+const cors = require('cors');
+const Wallet = require('./Wallet');
+const ProofOfWork = require('./ProofOfWork');
+
+const {
+  broadCastTransactionPool,
+  initP2PServer,
+  connectToPeers,
+  broadcastNewBlockMined,
+} = require('./p2p');
+const BlockChain = require('./BlockChain');
 // // // const CryptoJS = require('crypto-js');
 // // const dontenv = require('dotenv');
 // // const BlockChain = require('./BlockChain');
@@ -243,3 +261,87 @@
 
 // // const init = Wallet.initWallet();
 // // const publicKey =
+
+const httpPort = parseInt(process.argv[2]) || 3001;
+const p2pPort = parseInt(process.argv[3]) || 6001;
+
+const initHttpServer = (httpPort) => {
+  const app = express();
+  app.use(express.json());
+  app.use(cors());
+  app.get('/blocks', (req, res) => {
+    return res.json(blockchain.blocks);
+  });
+
+  app.get('/walletExists', (req, res) => {
+    return res.json({ isExists: Wallet.privateKeyExists() });
+  });
+  app.get('/blocks', (req, res) => {
+    return res.json(blockchain.blocks);
+  });
+
+  app.get('/transactions', (req, res) => {
+    const transactions = blockchain.getAllTransactions(getTransactionPool());
+    transactions.map((transaction) =>
+      blockchain.getTransactionInfo(transaction)
+    );
+
+    return res.json(blockchain.getTransactionInfo);
+  });
+
+  app.get('/walletInfo', (req, res) => {
+    const address = Wallet.getPublicKey();
+    return res.json({
+      publicAddress: address,
+      balance: blockchain.getBalance(address),
+    });
+  });
+
+  app.get('/balance/:address', (req, res) => {
+    console.log(req.params.address);
+    const balance = blockchain.getBalance(req.params.address);
+
+    return res.json(balance);
+  });
+
+  app.post('/sendcoin', (req, res) => {
+    const { from, to, amount } = req.body;
+    const transactions = blockchain.sendCoin(from, to, amount);
+    transactionPool.push(...transactions);
+
+    broadCastTransactionPool();
+
+    return res.json(transactions);
+  });
+
+  app.post('/addPeer', (req, res) => {
+    connectToPeers(req.body.peer);
+    res.send();
+  });
+
+  app.get('/transactionPool', (req, res) => {
+    return res.json(getTransactionPool());
+  });
+
+  app.get('/mineTransactions', (req, res) => {
+    const transactions = [...getTransactionPool()];
+
+    const lastestBlock = BlockChain.getLatestBlock(blockchain);
+    const block = ProofOfWork.findBlock(
+      lastestBlock.index + 1,
+      lastestBlock.blockHash,
+      new Date().getTime() / 100,
+      transactions,
+      ProofOfWork.getAdjustedDifficulty(blockchain)
+    );
+
+    broadcastNewBlockMined(block);
+    res.json(block);
+  });
+  app.listen(httpPort, () => {
+    console.log('Http server listening on PORT: ', httpPort);
+  });
+};
+
+initHttpServer(httpPort);
+initP2PServer(p2pPort);

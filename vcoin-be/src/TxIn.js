@@ -1,3 +1,6 @@
+const ec = require('elliptic').ec;
+const EC = new ec('secp256k1');
+
 class TxIn {
   constructor(txOutId, txOutIndex, signature) {
     // id of transation has the output
@@ -6,8 +9,11 @@ class TxIn {
     this.signature = signature;
   }
 
-  canUnlockOutputWith(unlockingData) {
-    return this.signature === unlockingData;
+  static canUnlockOutputWith(unlockingData, txin, transaction) {
+    const key = EC.keyFromPublic(unlockingData, 'hex');
+    console.log(txin.signature);
+    const validSignature = key.verify(transaction.id, txin.signature);
+    return validSignature;
   }
 }
 

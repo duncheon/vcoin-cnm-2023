@@ -11,6 +11,7 @@ class Wallet {
   static privateKeyExists() {
     try {
       let walletData = JSON.parse(fs.readFileSync(privateKeyLocation));
+      console.log(walletData);
       if (walletData.privateKey) {
         return true;
       }
@@ -22,13 +23,13 @@ class Wallet {
 
   static initWallet() {
     if (this.privateKeyExists(privateKeyLocation)) {
-      return;
+      return false;
     }
 
     const newPrivateKey = this.generatePrivateKey();
 
     const walletData = JSON.stringify({
-      newPrivateKey,
+      privateKey: newPrivateKey,
     });
 
     try {
@@ -45,8 +46,8 @@ class Wallet {
   }
 
   static getPrivateKey() {
-    //  let walletData = JSON.parse(fs.readFileSync(privateKeyLocation));
-    return this.generatePrivateKey();
+    let walletData = JSON.parse(fs.readFileSync(privateKeyLocation));
+    return walletData.privateKey;
   }
 
   static getPublicKey() {

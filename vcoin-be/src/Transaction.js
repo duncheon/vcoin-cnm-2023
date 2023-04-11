@@ -13,23 +13,23 @@ class Transaction {
     this.txOuts = txOuts;
   }
 
-  getTransactionId() {
-    const txInContent = this.txIns
+  static getTransactionId(transaction) {
+    const txInContent = transaction.txIns
       .map((txIn) => txIn.txOutId + txIn.txOutIndex)
       .reduce((a, b) => a + b, '');
 
-    const txOutContent = this.txOuts
+    const txOutContent = transaction.txOuts
       .map((txOut) => txOut.address + txOut.amount)
       .reduce((a, b) => a + b, '');
 
     return CryptoJs.SHA256(txInContent + txOutContent).toString();
   }
 
-  isCoinBase() {
+  static isCoinBase(transaction) {
     return (
-      this.txIns.length === 1 &&
-      this.txIns[0].txOutIndex === -1 &&
-      this.txIns[0].txOutId === ''
+      transaction.txIns.length === 1 &&
+      transaction.txIns[0].txOutIndex === -1 &&
+      transaction.txIns[0].txOutId === ''
     );
   }
   static newCoinBaseTX(to, data) {
@@ -40,7 +40,7 @@ class Transaction {
     const txin = new TxIn('', -1, data);
     const txout = new TxOut(to, START_REWARD_COINS);
     const newTX = new Transaction(null, [txin], [txout]);
-    newTX.id = newTX.getTransactionId();
+    newTX.id = this.getTransactionId(newTX);
 
     return newTX;
   }
@@ -78,14 +78,14 @@ class Transaction {
     }
 
     result = new Transaction(null, inputs, outputs);
-    result.id = result.getTransactionId();
+    result.id = Transaction.getTransactionId(result);
 
     //result = result.signTxIns(result, privateKey, validOutputs);
     return result;
   }
 
-  signTxIns(transaction, privateKey, unspentTxOuts) {
-    const dataToSign = this.id;
+  static signTxIns(transaction, privateKey, unspentTxOuts) {
+    const dataToSign = transaction.id;
     const key = EC.keyFromPrivate(privateKey, 'hex');
     for (let i = 0; i < transaction.txIns.length; i++) {
       const txIn = transaction.txIns[i];
@@ -105,46 +105,57 @@ class Transaction {
         throw Error();
       }
 
-      const refAddress = refUnspentTxOut.address;
+      const refAddress = refUnspentTxOut[0].address;
 
       if (Wallet.getPublicKey(privateKey) !== refAddress) {
         console.log('Not match address that is ref in txIn');
         throw Error();
       }
 
-      const signature = key.sign(dataToSign).toDER().toString();
+      const signature = key.sign(dataToSign).toDER();
       transaction.txIns[i].signature = signature;
     }
     return transaction;
   }
 
-  // validateTransaction(blockchain, transaction, from) {
-  //   // valid id
-  //   if (typeof transaction.id !== 'string') {
-  //     return false;
-  //   }
+  static validateTransaction(blockchain, transaction) {
+    // valid id
+    if (typeof transaction.id !== 'string') {
+      return false;
+    }
 
-  //   const reCalId = this.getTransactionId(transaction);
-  //   if (reCalId !== transaction.id) {
-  //     return false;
-  //   }
+    const reCalId = this.getTransactionId(transaction);
+    if (reCalId !== transaction.id) {
+      return false;
+    }
 
-  //   // valid tXIns
-  //   const unspentTxOuts = blockchain.findUnspentTxOuts(from);
-  //   const txIns = transaction.txIns;
-  //   for (let i = 0 ; i < txIns.length ;i++) {
-  //     let count = 0;
-  //   for (let i = 0; i < unspentTxOuts.length; i++) {
-  //     if (unspentTxOuts.tx)
-  //   }
-  //   if (count <= 0) {
-  //     return false;
-  //   }
-  //   }
-
-  //   const key = EC.keyFromPublic()
-
-  // }
+    // valid tXIns
+    const txIns = transaction.txIns;
+    const unspentTxOuts = blockchain.findAllUnspentTxOuts();
+    let count = 0;
+    for (let i = 0; i < txIns.length; i++) {
+      const txIn = txIns[i];
+      for (let j = 0; j < unspentTxOuts.length; i++) {
+        if (
+          txIn.txOutId === unspentTxOuts[j].txOutId &&
+          txIn.txOutIndex === unspentTxOuts[j].txOutIndex
+        ) {
+          const key = EC.keyFromPublic(unspentTxOuts[j].address, 'hex');
+          const validSignature = key.verify(transaction.id, txIn.signature);
+          if (!validSignature) {
+            console.log('invalid signature of txin');
+            return false;
+          } else {
+            count++;
+            break;
+          }
+        }
+      }
+    }
+    if (count === txIns.length) {
+      return true;
+    } else return false;
+  }
 }
 
 module.exports = Transaction;

@@ -1,5 +1,5 @@
 const Block = require('./Block');
-const BlockChain = require('./BlockChain');
+
 const {
   BLOCK_GENERATION_INTERVAL,
   DIFFICULTY_ADJUSTMENT_INTERVAL,
@@ -7,7 +7,8 @@ const {
 
 class ProoFOfWork {
   static getAdjustedDifficulty(blockchain) {
-    const latestBlock = blockchain.getLastestBlock();
+    console.log(blockchain);
+    const latestBlock = blockchain.blocks[blockchain.blocks.length - 1];
     const blockChain = blockchain.blocks;
 
     let prevAdjustmentBlock =
@@ -28,7 +29,7 @@ class ProoFOfWork {
     } else return prevAdjustmentBlock.difficulty;
   }
 
-  static verifyHash = (newBlock, blockchain) => {
+  static verifyHash(newBlock, blockchain) {
     const reHash = Block.calculateHash(
       newBlock.index,
       newBlock.prevHash,
@@ -38,15 +39,25 @@ class ProoFOfWork {
       newBlock.nonce
     );
 
+    if (
+      newBlock.prevHash !==
+      blockchain.blocks[blockchain.blocks.length - 1].blockHash
+    ) {
+      return false;
+    }
+
     if (reHash === newBlock.blockHash) {
-      return this.hashMatchesDifficulty(
+      const rehashRs = this.hashMatchesDifficulty(
         newBlock.blockHash,
         this.getAdjustedDifficulty(blockchain)
       );
+      if (rehashRs === false) {
+        return false;
+      }
     }
 
-    return false;
-  };
+    return true;
+  }
 
   static hashMatchesDifficulty(hash, difficulty) {
     const requiredPrefix = '0'.repeat(difficulty);

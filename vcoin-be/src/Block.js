@@ -58,6 +58,19 @@ class Block {
 
   //     return new Block(nextIndex, prevHash, nextTimestamp, blockData, nextHash);
   //   };
+  static isValidBlockStructure(block) {
+    // type check
+    if (block === null) {
+      return false;
+    }
+
+    return (
+      typeof block.index === 'number' &&
+      typeof block.blockHash === 'string' &&
+      typeof block.prevHash === 'string' &&
+      typeof block.timestamp === 'number'
+    );
+  }
 }
 
 module.exports = Block;

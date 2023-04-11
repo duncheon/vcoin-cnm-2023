@@ -4,8 +4,8 @@ class TxOut {
     this.amount = amount;
   }
 
-  canBeUnlockedWith(unlockingData) {
-    return this.address === unlockingData;
+  static canBeUnlockedWith(unlockingData, txout) {
+    return txout.address === unlockingData;
   }
 }
 
