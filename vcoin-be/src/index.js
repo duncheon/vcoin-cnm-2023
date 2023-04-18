@@ -4,6 +4,9 @@ const {
   transactionPool,
   getTransactionPool,
   addTransactionToPool,
+  setPrivateKey,
+  setAddress,
+  getAddress,
 } = require('./data');
 const cors = require('cors');
 const Wallet = require('./Wallet');
@@ -277,20 +280,34 @@ const initHttpServer = (httpPort) => {
     return res.json({ isExists: Wallet.privateKeyExists() });
   });
   app.get('/blocks', (req, res) => {
+    const { page } = req.query.page;
+
     return res.json(blockchain.blocks);
   });
 
   app.get('/transactions', (req, res) => {
-    const transactions = blockchain.getAllTransactions(getTransactionPool());
-    transactions.map((transaction) =>
-      blockchain.getTransactionInfo(transaction)
-    );
+    const { page } = req.query.page;
 
-    return res.json(blockchain.getTransactionInfo);
+    const transactions = blockchain.getAllTransactions(getTransactionPool());
+    console.log(transactions);
+    const result = transactions.map((transaction) => {
+      const transactionInfo = blockchain.getTransactionInfo(transaction);
+      return {
+        ...transactionInfo,
+        status: transaction.status,
+      };
+    });
+
+    return res.json(result);
+  });
+
+  app.get('/wallets', (req, res) => {
+    return res.json(Wallet.getWallets());
   });
 
   app.get('/walletInfo', (req, res) => {
     const address = Wallet.getPublicKey();
+    console.log(address);
     return res.json({
       publicAddress: address,
       balance: blockchain.getBalance(address),
@@ -323,6 +340,34 @@ const initHttpServer = (httpPort) => {
     return res.json(getTransactionPool());
   });
 
+  app.post('/wallet/init', async (req, res) => {
+    const { password } = req.body;
+    let init = false;
+    if (Wallet.privateKeyExists()) {
+      init = true;
+    } else init = Wallet.initWallet();
+
+    if (init === true) {
+      setPrivateKey(Wallet.getPrivateKey());
+      setAddress();
+      const setPassword = Wallet.setPassword(getAddress(), password);
+
+      if (setPassword) {
+        return res.status(201).send({
+          status: 'success',
+          ...Wallet.getWallets(),
+        });
+      }
+
+      return res.json({
+        result: 'failed',
+      });
+    }
+    return res.json({
+      result: 'failed',
+    });
+  });
+
   app.get('/mineTransactions', (req, res) => {
     const transactions = [...getTransactionPool()];
 
@@ -338,6 +383,7 @@ const initHttpServer = (httpPort) => {
     broadcastNewBlockMined(block);
     res.json(block);
   });
+
   app.listen(httpPort, () => {
     console.log('Http server listening on PORT: ', httpPort);
   });

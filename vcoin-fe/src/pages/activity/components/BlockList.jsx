@@ -1,33 +1,34 @@
+import { useDispatch, useSelector } from 'react-redux';
 import defaultAvatar from '../../../assets/default-avatar.png';
 import './blocklist.css';
+import { useEffect } from 'react';
+import { getBlocks } from '../../../redux/reducers/blockReducer';
 
-const blocks = [
-  {
-    blockIdx: '0',
-    miner: 'asdqwdpkow',
-
-    totalTxts: 10,
-    rewards: 2,
-  },
-];
 const BlockList = () => {
+  const blocks = useSelector((state) => state.blocks);
+
+  const dispatch = useDispatch();
+  useEffect(() => {
+    dispatch(getBlocks(1));
+  }, []);
+
   return (
     <div className="list-container">
       <div className="list-header">
         <h3>Lastest blocks</h3>
       </div>
 
-      {blocks.map((block) => (
-        <div key={block.blockIdx} className="block">
+      {blocks.blocks.map((block) => (
+        <div key={block.index} className="block">
           <div className="block-info">
-            <p>Block id: {block.blockIdx}</p>
+            <p>Block id: {block.index}</p>
           </div>
           <div className="miner-info">
-            <p>Miner: {block.miner}</p>
-            <p>Txtns: {block.totalTxts}</p>
+            <p>{block.miner ? `Miner: ${block.miner}` : 'Genesis block'}</p>
+            <p>Txtns: {block.transactions.length}</p>
           </div>
           <div className="reward-info">
-            <p>Rewards: {block.rewards}</p>
+            <p>Rewards: 0</p>
           </div>
         </div>
       ))}

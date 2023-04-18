@@ -2,21 +2,33 @@ import axios from 'axios';
 import Address from './components/Address';
 import './sendcoin.css';
 import { useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
+import { Navigate } from 'react-router-dom';
 
 const serverUrl = 'http://localhost:3001';
 
-const SendCoin = ({ wallet }) => {
-  const { publicAddress, balance } = wallet;
+const SendCoin = () => {
+  const userData = useSelector((state) => state.wallets);
+  const getWallet = (userData) => {
+    const publicAddress = userData.addresses[userData.selected];
+    const balance = userData.balance;
+    return { publicAddress, balance };
+  };
+  const { publicAddress, balance } = getWallet(userData);
+
+  if (userData.firstGen === true) {
+    return <Navigate to="/initWallet" />;
+  }
 
   const [from, setFrom] = useState('');
   const [to, setTo] = useState('');
   const [amount, setAmount] = useState(0);
 
   useEffect(() => {
-    if (publicAddress) {
+    if (publicAddress !== from && publicAddress) {
       setFrom(publicAddress);
     }
-  }, [wallet]);
+  }, [userData.selected]);
 
   const handleTextChange = (val) => {
     setTo(val);

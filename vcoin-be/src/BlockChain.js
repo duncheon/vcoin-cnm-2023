@@ -196,18 +196,22 @@ class BlockChain {
 
     return false;
   }
+
   getTransactionInfo(transaction) {
     const from = '';
     const to = transaction.txOuts[0].address;
-    for (let i = 0; i < this.blocks.length; i++) {
-      const block = this.blocks[i];
-      for (let j = 0; j < block.transactions.length; j++) {
-        const bTransaction = block.transactions[j];
-        if (transaction.txtIns[0].txtOutId === bTransaction.id) {
-          from = bTransaction.txtOuts[0].address;
+    if (!Transaction.isCoinBase(transaction)) {
+      for (let i = 0; i < this.blocks.length; i++) {
+        const block = this.blocks[i];
+        for (let j = 0; j < block.transactions.length; j++) {
+          const bTransaction = block.transactions[j];
+          if (transaction.txtIns[0].txtOutId === bTransaction.id) {
+            from = bTransaction.txtOuts[0].address;
+          }
         }
       }
     }
+
     return {
       id: transaction.id,
       from,
@@ -221,10 +225,14 @@ class BlockChain {
       const block = this.blocks[i];
       for (let j = 0; j < block.transactions.length; j++) {
         const transaction = block.transactions[j];
-        result.push(transaction);
+        result.push({ ...transaction, status: 'Success' });
       }
     }
-    return [...result, transactionPool];
+
+    for (let i = 0; i < transactionPool.length; i++) {
+      result.push({ ...transactionPool[i], status: 'Pending' });
+    }
+    return result;
   }
 
   findAllUnspentTx() {

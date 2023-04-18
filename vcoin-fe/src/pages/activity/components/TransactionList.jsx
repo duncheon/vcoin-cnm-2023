@@ -1,3 +1,53 @@
-const TransactionList = () => {};
+import { useDispatch, useSelector } from 'react-redux';
+import './transactionlist.css';
+import { useEffect } from 'react';
+import { getTransactions } from '../../../redux/reducers/transactionReducer';
 
-export default TransactionList;
+const transactionList = () => {
+  const transactions = useSelector((state) => state.transactions);
+
+  const dispatch = useDispatch();
+  useEffect(() => {
+    dispatch(getTransactions(1));
+  }, []);
+
+  const displayAddress = (input) => {
+    const reduced = input.slice(0, 10) + '...';
+    return '0x' + reduced;
+  };
+
+  return (
+    <div className="list-container">
+      <div className="list-header">
+        <h3>Lastest transactions</h3>
+      </div>
+      {transactions.transactions.map((transaction) => (
+        <div key={transaction.from} className="transaction">
+          <div className="transaction-info">
+            <p>Transaction id:</p>
+            <a href="www.google.com">{displayAddress(transaction.id)}</a>
+          </div>
+          <div className="address-info">
+            <p>
+              {transaction.from ? (
+                <a href="www.google.com">
+                  `from: ${displayAddress(transaction.from)}`
+                </a>
+              ) : (
+                'Coin based'
+              )}
+            </p>
+            <p>
+              to: <a href="www.google.com">{displayAddress(transaction.to)}</a>
+            </p>
+          </div>
+          <div className="status-info">
+            <p>Status: {transaction.status}</p>
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+};
+
+export default transactionList;

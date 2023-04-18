@@ -23,3 +23,17 @@ input {
   width: 4em;
   height: 4em;
 }
+
+.input-address-container {
+  display: flex;
+  flex-direction: row;
+  margin: 0;
+  padding: 0;
+  align-items: center;
+}
+.input-address-container > p {
+  margin-left: 1em;
+}
+.input-address-container > input {
+  margin-left: 0.3em;
+}

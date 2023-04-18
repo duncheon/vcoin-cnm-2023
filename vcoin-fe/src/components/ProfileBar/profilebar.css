@@ -14,7 +14,7 @@
   border-radius: 1.2rem;
   padding: 0.5em 0 0.5em 0;
   margin-left: 0.4em;
-  width: 12em;
+  width: 19em;
   height: 100%;
   align-items: center;
 }
@@ -37,6 +37,7 @@
   justify-content: space-evenly;
   align-items: start;
   height: 100%;
+  min-width: 15em;
   word-wrap: break-word;
 }
 .text-container > p {
@@ -56,4 +57,16 @@
 
 .light {
   font-weight: 200;
+}
+
+.public-address-container {
+  display: flex;
+  width: 100%;
+  justify-content: flex-start;
+}
+.public-address-container > p {
+  margin-left: 0.8em;
+}
+.public-address-container > button {
+  margin-left: 0.5em;
 }

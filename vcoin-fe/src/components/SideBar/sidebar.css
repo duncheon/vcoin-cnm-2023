@@ -8,6 +8,7 @@
       rgba(250, 250, 250, 0.98) 100%
     ),
     linear-gradient(rgb(197, 73, 255) 0%, rgb(104, 76, 255) 100%);
+  position: relative;
 }
 
 @media only screen and (max-width: 650px) {
@@ -61,4 +62,24 @@
 .item-bg:hover {
   background: #d3d3d3;
   opacity: 0.8;
+}
+
+.connect-to-peer-div {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  justify-content: center;
+  position: absolute;
+  bottom: 20px;
+}
+
+.connect-to-peer-btn {
+  background-color: green;
+  color: white;
+  padding: 0.5em;
+  border-radius: 8px;
+  border: 4px solid white;
+}
+.connect-to-peer-btn:hover {
+  cursor: pointer;
 }

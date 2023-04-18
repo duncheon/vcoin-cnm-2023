@@ -1,26 +1,28 @@
 import axios from 'axios';
 import './content.css';
 import { useState, useEffect } from 'react';
-const serverUrl = 'http://localhost:3001';
+import { useDispatch, useSelector } from 'react-redux';
+import { getBalance } from '../../../redux/reducers/wallet';
 
-const Content = ({ wallet }) => {
-  const { publicAddress } = wallet;
+const Content = ({ publicAddress }) => {
+  const userData = useSelector((state) => state.wallets);
+  const dispatch = useDispatch();
   const [loading, setLoading] = useState(true);
-  const [balance, setBalance] = useState(0);
 
   useEffect(() => {
-    if (publicAddress) {
-      axios.get(`${serverUrl}/balance/${publicAddress}`).then((data) => {
-        setLoading(false);
-        setBalance(data.data);
-      });
+    setLoading(true);
+    if (userData.firstGen === false) {
+      dispatch(getBalance());
+      setLoading(false);
     }
-  }, [publicAddress]);
+  }, []);
 
   return (
     <>
       <div className="wallet-value">
-        {!loading && <p className="wallet-value-text">{balance} VCOIN</p>}
+        {!loading && (
+          <p className="wallet-value-text">{userData.balance} VCOIN</p>
+        )}
       </div>
     </>
   );
