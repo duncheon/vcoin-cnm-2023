@@ -33,6 +33,7 @@ function App() {
     dispatch(getWalletInfo());
     setLoading(false);
   }, []);
+
   if (loading) {
     <Loader />;
   } else

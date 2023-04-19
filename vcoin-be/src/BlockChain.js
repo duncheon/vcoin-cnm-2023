@@ -196,17 +196,38 @@ class BlockChain {
 
     return false;
   }
+  // getPendingTransactionInfo(transaction) {
+  //       const from = '';
+  //       const to = transaction.txOuts[0].address;
+  //       if (!Transaction.isCoinBase(transaction)) {
+  //         for (let i = 0; i < this.blocks.length; i++) {
+  //           const block = this.blocks[i];
+  //           for (let j = 0; j < block.transactions.length; j++) {
+  //             const bTransaction = block.transactions[j];
+  //             if (transaction.txtIns[0].txtOutId === bTransaction.id) {
+  //               from = bTransaction.txtOuts[0].address;
+  //             }
+  //           }
+  //         }
+  //       }
+
+  //       return {
+  //         id: transaction.id,
+  //         from,
+  //         to,
+  //       };
+  // }
 
   getTransactionInfo(transaction) {
-    const from = '';
-    const to = transaction.txOuts[0].address;
+    let from = '';
+    let to = transaction.txOuts[0].address;
     if (!Transaction.isCoinBase(transaction)) {
       for (let i = 0; i < this.blocks.length; i++) {
         const block = this.blocks[i];
         for (let j = 0; j < block.transactions.length; j++) {
           const bTransaction = block.transactions[j];
-          if (transaction.txtIns[0].txtOutId === bTransaction.id) {
-            from = bTransaction.txtOuts[0].address;
+          if (transaction.txIns[0].txOutId === bTransaction.id) {
+            from = bTransaction.txOuts[0].address;
           }
         }
       }

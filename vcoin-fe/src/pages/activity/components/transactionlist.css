@@ -18,10 +18,12 @@
   box-shadow: 0 0.5rem 1.2rem rgb(189 197 209 / 20%);
 }
 .transaction-info {
+  width: 8em;
   display: flex;
   flex-direction: column;
   overflow: hidden;
   text-overflow: ellipsis;
+  text-align: left;
 }
 
 .transaction-img {
@@ -31,11 +33,15 @@
 }
 
 .address-info {
+  width: 10em;
   display: flex;
   flex-direction: column;
   overflow: hidden;
   text-overflow: ellipsis;
+  text-align: left;
 }
 
 .status-info {
+  width: 8em;
+  text-align: left;
 }

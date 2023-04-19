@@ -6,6 +6,8 @@ const {
   address,
   getTransactionPool,
   updateTransactionsPool,
+  getBlockChain,
+  addBlock,
 } = require('./data');
 let {
   transactionPool,
@@ -112,14 +114,14 @@ const initMessageHandler = (ws) => {
             const transaction = receivedTransactions[i];
             try {
               const validation = Transaction.validateTransaction(
-                blockchain,
+                getBlockChain(),
                 transaction
               );
               // handleReceivedTransaction(transaction);
               // if no error is thrown, transaction was indeed added to the pool
               // let's broadcast transaction pool
               if (validation) {
-                transactionPool.push(transaction);
+                addTransactionToPool([transaction]);
               }
             } catch (e) {
               console.log(e.message);
@@ -136,7 +138,7 @@ const initMessageHandler = (ws) => {
           newBlock.transactions = usedTransactions;
           const verify = ProoFOfWork.verifyHash(newBlock, blockchain);
           if (verify === true) {
-            blockchain.blocks.push(newBlock);
+            addBlock(newBlock);
 
             removeTransactionFromPool(usedTransactions);
 
@@ -151,7 +153,7 @@ const initMessageHandler = (ws) => {
           );
 
           if (ProoFOfWork.verifyHash(newVerifedBlocks[0], blockchain)) {
-            blockchain.blocks.push(newVerifedBlocks[0]);
+            addBlock(newVerifedBlocks[0]);
           }
 
           updateTransactionsPool(updatedTransactionsPool);
@@ -223,7 +225,6 @@ const handleBlockchainResponse = (receivedBlocks) => {
     return;
   }
   const latestBlockReceived = receivedBlocks[receivedBlocks.length - 1];
-  console.log(latestBlockReceived);
   if (!Block.isValidBlockStructure(latestBlockReceived)) {
     console.log('block structure not valid');
     return;
@@ -243,7 +244,7 @@ const handleBlockchainResponse = (receivedBlocks) => {
         latestBlockReceived.index
     );
     if (latestBlockHeld.blockHash === latestBlockReceived.prevHash) {
-      if (blockchain.blocks.push(latestBlockReceived)) {
+      if (addBlock(latestBlockReceived)) {
         broadcast(responseLatestMsg());
       }
     } else if (receivedBlocks.length === 1) {
@@ -270,6 +271,7 @@ const broadcastNewBlockMined = (block, transactions) => {
 
 const connectToPeers = (newPeer) => {
   const ws = new WebSocket(newPeer);
+
   ws.on('open', () => {
     initConnection(ws);
   });

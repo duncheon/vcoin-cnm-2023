@@ -17,6 +17,7 @@ const {
   initP2PServer,
   connectToPeers,
   broadcastNewBlockMined,
+  getSockets,
 } = require('./p2p');
 const BlockChain = require('./BlockChain');
 // // // const CryptoJS = require('crypto-js');
@@ -289,9 +290,10 @@ const initHttpServer = (httpPort) => {
     const { page } = req.query.page;
 
     const transactions = blockchain.getAllTransactions(getTransactionPool());
-    console.log(transactions);
     const result = transactions.map((transaction) => {
-      const transactionInfo = blockchain.getTransactionInfo(transaction);
+      let transactionInfo = null;
+
+      transactionInfo = blockchain.getTransactionInfo(transaction);
       return {
         ...transactionInfo,
         status: transaction.status,
@@ -323,8 +325,8 @@ const initHttpServer = (httpPort) => {
 
   app.post('/sendcoin', (req, res) => {
     const { from, to, amount } = req.body;
-    const transactions = blockchain.sendCoin(from, to, amount);
-    transactionPool.push(...transactions);
+    const transactions = blockchain.sendCoin(from, to, parseInt(amount));
+    addTransactionToPool(transactions);
 
     broadCastTransactionPool();
 
@@ -332,12 +334,26 @@ const initHttpServer = (httpPort) => {
   });
 
   app.post('/addPeer', (req, res) => {
+    const curTotal = getSockets().length;
+    console.log(req.body.peer);
     connectToPeers(req.body.peer);
-    res.send();
+    const newTotal = getSockets().length;
+    if (curTotal < newTotal) {
+      return res.json({
+        status: 'success',
+      });
+    } else
+      return res.json({
+        status: 'failed',
+      });
   });
 
   app.get('/transactionPool', (req, res) => {
     return res.json(getTransactionPool());
+  });
+
+  app.get('/peers', (req, res) => {
+    return res.json(getSockets());
   });
 
   app.post('/wallet/init', async (req, res) => {
@@ -369,6 +385,7 @@ const initHttpServer = (httpPort) => {
   });
 
   app.get('/mineTransactions', (req, res) => {
+    console.log('Hi', getTransactionPool());
     const transactions = [...getTransactionPool()];
 
     const lastestBlock = BlockChain.getLatestBlock(blockchain);
@@ -381,7 +398,11 @@ const initHttpServer = (httpPort) => {
     );
 
     broadcastNewBlockMined(block);
-    res.json(block);
+
+    res.json({
+      block,
+      status: 'success',
+    });
   });
 
   app.listen(httpPort, () => {

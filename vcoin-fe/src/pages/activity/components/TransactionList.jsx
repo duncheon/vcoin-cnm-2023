@@ -23,15 +23,15 @@ const transactionList = () => {
       </div>
       {transactions.transactions.map((transaction) => (
         <div key={transaction.from} className="transaction">
-          <div className="transaction-info">
+          <div className="transaction-info text-center">
             <p>Transaction id:</p>
             <a href="www.google.com">{displayAddress(transaction.id)}</a>
           </div>
-          <div className="address-info">
+          <div className="address-info text-left">
             <p>
               {transaction.from ? (
                 <a href="www.google.com">
-                  `from: ${displayAddress(transaction.from)}`
+                  from: ${displayAddress(transaction.from)}
                 </a>
               ) : (
                 'Coin based'
@@ -41,7 +41,7 @@ const transactionList = () => {
               to: <a href="www.google.com">{displayAddress(transaction.to)}</a>
             </p>
           </div>
-          <div className="status-info">
+          <div className="status-info text-center">
             <p>Status: {transaction.status}</p>
           </div>
         </div>

@@ -135,7 +135,7 @@ class Transaction {
     let count = 0;
     for (let i = 0; i < txIns.length; i++) {
       const txIn = txIns[i];
-      for (let j = 0; j < unspentTxOuts.length; i++) {
+      for (let j = 0; j < unspentTxOuts.length; j++) {
         if (
           txIn.txOutId === unspentTxOuts[j].txOutId &&
           txIn.txOutIndex === unspentTxOuts[j].txOutIndex

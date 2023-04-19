@@ -2,13 +2,14 @@ import axios from 'axios';
 import Address from './components/Address';
 import './sendcoin.css';
 import { useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { Navigate } from 'react-router-dom';
-
-const serverUrl = 'http://localhost:3001';
+import { getBalance } from '../../redux/reducers/wallet';
+import walletServices from '../../services/wallet';
 
 const SendCoin = () => {
   const userData = useSelector((state) => state.wallets);
+  const dispatch = useDispatch();
   const getWallet = (userData) => {
     const publicAddress = userData.addresses[userData.selected];
     const balance = userData.balance;
@@ -16,13 +17,20 @@ const SendCoin = () => {
   };
   const { publicAddress, balance } = getWallet(userData);
 
+  console.log(userData);
   if (userData.firstGen === true) {
     return <Navigate to="/initWallet" />;
   }
 
   const [from, setFrom] = useState('');
   const [to, setTo] = useState('');
-  const [amount, setAmount] = useState(0);
+  const [amount, setAmount] = useState(1);
+
+  useEffect(() => {
+    if (userData.firstGen === false) {
+      dispatch(getBalance());
+    }
+  }, []);
 
   useEffect(() => {
     if (publicAddress !== from && publicAddress) {
@@ -35,23 +43,22 @@ const SendCoin = () => {
   };
 
   const handleAmountChange = (val) => {
+    console.log(val, balance);
     if (val > balance) {
       setAmount(balance);
     } else if (val < 0 || !val) {
       setAmount(0);
     } else setAmount(val);
   };
-  const handleSendCoin = () => {
-    axios
-      .post(`${serverUrl}/sendcoin`, {
-        from,
-        to,
-        amount,
-      })
-      .then((data) => {
-        window.alert('Successfully create a transaction, waiting for miner');
-      })
-      .catch((err) => console.log(err));
+  const handleSendCoin = async () => {
+    try {
+      const result = await walletServices.sendCoin(from, to, amount);
+      window.alert(
+        'Successfully create a transaction, waiting for miner works'
+      );
+    } catch (err) {
+      window.alert('Failed to create a transaction');
+    }
   };
   return (
     <>
@@ -69,7 +76,7 @@ const SendCoin = () => {
             name="amount"
             type="number"
             style={{ display: 'flex' }}
-            min={0}
+            min={1}
             max={balance}
             value={amount}
             onChange={(e) => handleAmountChange(e.target.value)}

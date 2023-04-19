@@ -28,11 +28,21 @@ const importWallets = async (passphrase) => {
   return result.data;
 };
 
+const sendCoin = async (from, to, amount) => {
+  const result = await axios.post(`${beURL}/sendcoin`, {
+    from,
+    to,
+    amount,
+  });
+  return result.data;
+};
+
 const walletServices = {
   initWallet,
   importWallets,
   getWallets,
   getBalance,
+  sendCoin,
 };
 
 export default walletServices;
