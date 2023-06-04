@@ -17,6 +17,8 @@ import InitWallet from './pages/initwallet';
 import Loader from './components/Loader/Loader';
 import { useDispatch, useSelector } from 'react-redux';
 import { getBalance, getWalletInfo } from './redux/reducers/wallet';
+import BlockDetail from './pages/detail/BlockDetail';
+import TransactionDetail from './pages/detail/TransactionDetail';
 
 function App() {
   const dispatch = useDispatch();
@@ -48,6 +50,11 @@ function App() {
               <Route path="/activity" element={<Activity />}></Route>
               <Route path="/sendCoin" element={<SendCoin />}></Route>
               <Route path="/initWallet" element={<InitWallet />}></Route>
+              <Route path="/block/:id" element={<BlockDetail />}></Route>
+              <Route
+                path="/transaction/:id"
+                element={<TransactionDetail />}
+              ></Route>
               <Route path="*" element={<Navigate to="/initWallet" />}></Route>
               {/* <Route path="/test" element={<Loader small={true} />}></Route> */}
             </Routes>

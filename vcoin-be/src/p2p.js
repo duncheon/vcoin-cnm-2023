@@ -8,6 +8,7 @@ const {
   updateTransactionsPool,
   getBlockChain,
   addBlock,
+  replaceChain,
 } = require('./data');
 let {
   transactionPool,
@@ -110,6 +111,7 @@ const initMessageHandler = (ws) => {
             );
             break;
           }
+          const oldLength = getTransactionPool().length;
           for (let i = 0; i < receivedTransactions.length; i++) {
             const transaction = receivedTransactions[i];
             try {
@@ -126,6 +128,11 @@ const initMessageHandler = (ws) => {
             } catch (e) {
               console.log(e.message);
             }
+          }
+          const newLength = getTransactionPool().length;
+          console.log(oldLength, newLength);
+          if (oldLength < newLength) {
+            broadCastTransactionPool();
           }
           break;
         case MessageType.FOUND_NEW_BLOCK:
@@ -229,11 +236,9 @@ const handleBlockchainResponse = (receivedBlocks) => {
     console.log('block structure not valid');
     return;
   }
-  const latestBlockHeld = BlockChain.getLatestBlock(blockchain);
+  let latestBlockHeld = BlockChain.getLatestBlock(blockchain);
   if (!latestBlockHeld) {
-    console.log('Received blockchain is longer than current blockchain');
-    blockchain.blocks = receivedBlocks;
-    return;
+    latestBlockHeld = { index: -1, prevHash: -1 };
   }
 
   if (latestBlockReceived.index > latestBlockHeld.index) {
@@ -248,11 +253,15 @@ const handleBlockchainResponse = (receivedBlocks) => {
         broadcast(responseLatestMsg());
       }
     } else if (receivedBlocks.length === 1) {
-      console.log('We have to query the chain from our peer');
-      broadcast(queryAllMsg());
+      if (receivedBlocks[0].index === 0) {
+        replaceChain(receivedBlocks);
+      } else {
+        console.log('We have to query the chain from our peer');
+        broadcast(queryAllMsg());
+      }
     } else {
       console.log('Received blockchain is longer than current blockchain');
-      blockchain.blocks = receivedBlocks;
+      replaceChain(receivedBlocks);
     }
   } else {
     console.log(

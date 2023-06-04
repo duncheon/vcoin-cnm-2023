@@ -22,23 +22,23 @@ const transactionList = () => {
         <h3>Lastest transactions</h3>
       </div>
       {transactions.transactions.map((transaction) => (
-        <div key={transaction.from} className="transaction">
+        <div key={transaction.id} className="transaction">
           <div className="transaction-info text-center">
             <p>Transaction id:</p>
-            <a href="www.google.com">{displayAddress(transaction.id)}</a>
+            <a href={`/transaction/${transaction.id}`}>
+              {displayAddress(transaction.id)}
+            </a>
           </div>
           <div className="address-info text-left">
             <p>
               {transaction.from ? (
-                <a href="www.google.com">
-                  from: ${displayAddress(transaction.from)}
-                </a>
+                <a href="#">from: ${displayAddress(transaction.from)}</a>
               ) : (
                 'Coin based'
               )}
             </p>
             <p>
-              to: <a href="www.google.com">{displayAddress(transaction.to)}</a>
+              to: <a href="#">{displayAddress(transaction.to)}</a>
             </p>
           </div>
           <div className="status-info text-center">

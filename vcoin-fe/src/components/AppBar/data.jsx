@@ -16,12 +16,12 @@ const data = [
     to: '/activity',
   },
   {
-    text: <p className="icon-text">NFTs</p>,
+    text: <p className="icon-text">Coins</p>,
     icon: <BsGem size={28} />,
     to: '/sendcoin',
   },
   {
-    text: <p className="icon-text">DApps</p>,
+    text: <p className="icon-text">Details</p>,
     icon: <AiOutlineAppstore size={28} />,
   },
 ];

@@ -13,9 +13,15 @@ const mineTransactions = async () => {
   return result.data;
 };
 
+const getBlock = async (id) => {
+  const result = await axios.get(`${beURL}/block/${id}`);
+
+  return result.data;
+};
 const blockServices = {
   getBlocks,
   mineTransactions,
+  getBlock,
 };
 
 export default blockServices;

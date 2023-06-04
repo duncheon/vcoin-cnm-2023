@@ -11,7 +11,6 @@ class TxIn {
 
   static canUnlockOutputWith(unlockingData, txin, transaction) {
     const key = EC.keyFromPublic(unlockingData, 'hex');
-    console.log(txin.signature);
     const validSignature = key.verify(transaction.id, txin.signature);
     return validSignature;
   }

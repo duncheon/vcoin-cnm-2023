@@ -3,6 +3,7 @@ import defaultAvatar from '../../../assets/default-avatar.png';
 import './blocklist.css';
 import { useEffect } from 'react';
 import { getBlocks } from '../../../redux/reducers/blockReducer';
+import { Link } from 'react-router-dom';
 
 const BlockList = () => {
   const blocks = useSelector((state) => state.blocks);
@@ -21,10 +22,13 @@ const BlockList = () => {
       {blocks.blocks.map((block) => (
         <div key={block.index} className="block">
           <div className="block-info">
-            <p>Block id: {block.index}</p>
+            <p>
+              Block id:
+              <a href={`/block/${block.index}`}>{block.index}</a>
+            </p>
           </div>
           <div className="miner-info">
-            <p>{block.miner ? `Miner: ${block.miner}` : 'Genesis block'}</p>
+            <p>{block.index !== 0 ? `Mined block` : 'Genesis block'}</p>
             <p>Txtns: {block.transactions.length}</p>
           </div>
           <div className="reward-info">

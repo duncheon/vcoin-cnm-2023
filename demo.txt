@@ -1,0 +1,35 @@
+Demo ứng dụng cá nhân blockchain vcoin
+Bắt đầu demo:
+
+0. Chuẩn bị 3 node ( 3 thư mục source code khác nhau ).
+
+1. Config và clear data
++ Vì chỉ chạy trên local nên để demo p2p với 3 node cần chỉnh các địa chỉ URL trong file .env của FE ở 3 node.
++ Clear dữ liệu ( nếu có ) để khởi chạy fresh.
+
+2. Chạy server:
++ cd ./vcoin-be ở các node
++ Node 1: chạy npm start 3001 6001 genesis. Lưu ý 3001 là port server, 6001 là port p2p. Genesis vì blockchain khởi tạo lần đầu. Có thể không cần genesis lần chạy sau.
++ Node 2: chạy npm start 3002 6002.
++ Node 3: chạy npm start 3003 6003.
+
+3. Chạy FE:
++ cd ./ vcoin-fe ở các node.
++ npm run dev ở các node.
+
+4. Tạo ví và gửi tiền
++ Tạo ví.
++ Connect tới peer giữa các node. ( Không cần kết nối hết chỉ cần đủ liên kết)
++ Node 1 và 2 sẽ connect với nhau. Node 2 và 3 sẽ connect tới nhau.
++ Dùng 1 node hay nhiều node tạo transaction. ( Mỗi node 1 lúc chỉ được tạo 1 transaction ).
++ Dùng 1 node để mine transaction tạo block và đợi i verify => block mới được add.
++ Ta sẽ thử mine cùng lúc nhiều transactions
++ Kiểm tra kết quả balance. ( Thành công )
++ Kiểm tra thông tin block và transactions.
+5. Tắt 1 node và chạy lại
++ Ta sẽ thử tạo thêm 2 block ở node 1 hoặc 2 rồi mới chạy lại
++ Như vậy việc cập nhật lại block sau khi tắt node thành công.
+6. Tắt tất cả node và chạy lại 1 node. ( Kiểm tra dữ liệu chain )
++ Dữ liệu vẫn còn lưu lại ở các node thời điểm tắt.
+
+Phần demo kết thúc

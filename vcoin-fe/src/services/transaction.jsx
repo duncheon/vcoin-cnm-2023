@@ -7,8 +7,15 @@ const getTransactions = async (page) => {
 
   return result.data;
 };
+
+const getTransaction = async (id) => {
+  const result = await axios.get(`${beURL}/transaction/${id}`);
+
+  return result.data;
+};
 const transactionServices = {
   getTransactions,
+  getTransaction,
 };
 
 export default transactionServices;
