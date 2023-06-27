@@ -21,3 +21,7 @@
 
 - [Video](https://youtu.be/YAFZ3sqG5ew)
 - demo.txt in this repository
+
+## References
+- [NaiveCoin](https://github.com/lhartikk/naivecoin)
+- [BlockChain-Go-Vietnamese](https://github.com/hlongvu/blockchain-go-vietnamese)
